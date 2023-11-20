@@ -5,15 +5,13 @@ use std::{
 };
 
 use clap::Parser;
-use types::Task;
+use types::*;
 
 mod day01;
 mod types;
 mod util;
 
-type SolveFunc = dyn Fn(&str, bool, Task) -> (String, String);
-
-const FUNCS: [&SolveFunc; 1] = [&day01::solve];
+const SOLVER: [&dyn DaySolver; 1] = [&day01::Solver];
 
 fn cap_length(msg: &str, length: usize) -> &str {
     if msg.len() <= length {
@@ -35,7 +33,7 @@ fn calc_day(
     }
     let start = Instant::now();
     let input = util::read_input(day, test);
-    let (res1, res2) = FUNCS[day - 1](&input, test, task);
+    let (res1, res2) = SOLVER[day - 1].solve(&input, test, task);
     *time = Instant::now().duration_since(start);
     *result1 = res1;
     *result2 = res2;
@@ -68,7 +66,7 @@ fn main() {
     let parallel = args.parallel;
 
     let days = if day == 0 {
-        (1..=FUNCS.len()).collect::<Vec<usize>>()
+        (1..=SOLVER.len()).collect::<Vec<usize>>()
     } else {
         vec![day]
     };

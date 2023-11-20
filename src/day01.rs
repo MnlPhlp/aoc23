@@ -1,5 +1,5 @@
-use crate::types::Task;
+use crate::types::*;
 
-pub fn solve(input: &str, _test: bool, _task: Task) -> (String, String) {
-    ("test".into(), "result".into())
-}
+pub struct Solver;
+
+impl DaySolver for Solver {}
