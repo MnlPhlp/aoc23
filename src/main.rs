@@ -90,7 +90,7 @@ fn main() {
     results += "--: | :-------------: | :--------------:| --------: | :--------\n";
     for (i, day) in days.iter().enumerate() {
         results += &format!(
-            "{:0>3} | {: <15} | {: <15} | {: >9?} | {: >4.2} %\n",
+            "{: >3} | {: <15} | {: <15} | {: >9.4?} | {: >4.2} %\n",
             day,
             cap_length(&results1[i], 15),
             cap_length(&results2[i], 15),
