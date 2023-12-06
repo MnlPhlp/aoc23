@@ -31,7 +31,7 @@ impl DaySolver for Solver {
     }
 }
 
-fn find_first_number(line: &str) -> u32 {
+fn find_first_number(mut line: &str) -> u32 {
     let mut digit = 0u32;
     let digit_pos = line.chars().position(|c| c.is_ascii_digit());
     if let Some(pos) = digit_pos {
@@ -39,8 +39,8 @@ fn find_first_number(line: &str) -> u32 {
         if pos == 0 {
             return digit;
         }
+        line = &line[..=pos];
     }
-    let mut digit_pos = digit_pos.unwrap_or(usize::MAX);
     for num in [
         ("one", 1),
         ("two", 2),
@@ -53,19 +53,14 @@ fn find_first_number(line: &str) -> u32 {
         ("nine", 9),
     ] {
         if let Some(pos) = line.find(num.0) {
-            if pos == 0 {
-                return digit;
-            }
-            if pos < digit_pos {
-                digit_pos = pos;
-                digit = num.1
-            }
+            line = &line[..=pos];
+            digit = num.1
         }
     }
     digit
 }
 
-fn find_last_number(line: &str) -> u32 {
+fn find_last_number(mut line: &str) -> u32 {
     let mut digit = 0u32;
     let digit_pos = line
         .chars()
@@ -77,8 +72,8 @@ fn find_last_number(line: &str) -> u32 {
         if pos == line.len() {
             return digit;
         }
+        line = &line[pos..];
     }
-    let mut digit_pos = digit_pos.unwrap_or(0);
     for num in [
         ("one", 1),
         ("two", 2),
@@ -91,13 +86,8 @@ fn find_last_number(line: &str) -> u32 {
         ("nine", 9),
     ] {
         if let Some(pos) = line.rfind(num.0) {
-            if pos == line.len() - num.0.len() {
-                return digit;
-            }
-            if pos > digit_pos {
-                digit_pos = pos;
-                digit = num.1
-            }
+            line = &line[pos..];
+            digit = num.1
         }
     }
     digit

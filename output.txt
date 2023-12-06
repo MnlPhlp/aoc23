@@ -1002,9 +1002,9 @@ line: two2tdjdfbqtqxrs119r start: 2 end: 9
 ## Results:
 day | result 1        | result 2        | time (ms) | % overall 
 --: | :-------------: | :--------------:| --------: | :--------
-  1 | 54450           | 54265           |  2.9254ms | 99.97 %
+  1 | 54450           | 54265           |  3.7920ms | 99.95 %
 
-Overall Time: 2.92651ms
+Overall Time: 3.793295ms
 
-Summed Time: 2.925353ms
+Summed Time: 3.791966ms
 
