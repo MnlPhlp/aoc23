@@ -8,10 +8,11 @@ use clap::Parser;
 use types::*;
 
 mod day01;
+mod day02;
 mod types;
 mod util;
 
-const SOLVER: [&dyn DaySolver; 1] = [&day01::Solver];
+const SOLVER: [&dyn DaySolver; 2] = [&day01::Solver, &day02::Solver];
 
 fn cap_length(msg: &str, length: usize) -> &str {
     if msg.len() <= length {

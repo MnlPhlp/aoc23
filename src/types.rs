@@ -7,8 +7,8 @@ pub enum Task {
 
 pub trait DaySolver {
     fn solve(&self, input: &str, test: bool, task: Task) -> (String, String) {
-        let mut res1 = "Not Implemented".into();
-        let mut res2 = "Not Implemented".into();
+        let mut res1 = "".into();
+        let mut res2 = "".into();
         if !matches!(task, Task::Two) {
             res1 = self.solve1(input, test);
         }
