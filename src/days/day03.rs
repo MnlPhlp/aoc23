@@ -2,31 +2,36 @@ use crate::types::*;
 
 pub struct Solver;
 
-impl DaySolver for Solver {
-    fn solve1(&self, input: &str, test: bool) -> String {
+impl<'a> DaySolver<'a> for Solver {
+    type Input = (&'a str, usize, Vec<Number>);
+
+    fn parse_input(input: &'a str) -> Self::Input {
         let line_length = input.find('\n').unwrap() + 1;
+        (input, line_length, find_numbers(input, line_length))
+    }
+
+    fn solve1(&self, inp: &Self::Input, test: bool) -> String {
+        let (input, line_length, numbers) = inp;
         test_print!(test, "line_length: {line_length}");
         let mut sum = 0;
-        let numbers = find_numbers(input, line_length);
         for num in numbers {
-            if touches_symbol(input, line_length, num.x, num.y, num.len) {
+            if touches_symbol(input, *line_length, num.x, num.y, num.len) {
                 sum += num.val;
             }
         }
         sum.to_string()
     }
 
-    fn solve2(&self, input: &str, test: bool) -> String {
-        let line_length = input.find('\n').unwrap() + 1;
+    fn solve2(&self, inp: &Self::Input, test: bool) -> String {
+        let (input, line_length, numbers) = inp;
         test_print!(test, "line_length: {line_length}");
         let mut sum = 0;
-        let numbers = find_numbers(input, line_length);
         test_print!(test, "numbers: {numbers:?}");
         for (i, c) in input.bytes().enumerate() {
             if c == b'*' {
                 let x = i % line_length;
                 let y = i / line_length;
-                let numbers = touching_numbers(&numbers, x as isize, y as isize);
+                let numbers = touching_numbers(numbers, x as isize, y as isize);
                 test_print!(test, "x: {x} y: {y} touching: {numbers:?}");
                 if numbers.len() == 2 {
                     sum += numbers[0] * numbers[1];
@@ -63,7 +68,7 @@ fn touching_numbers(numbers: &[Number], x: isize, y: isize) -> Vec<u32> {
 }
 
 #[derive(Debug)]
-struct Number {
+pub struct Number {
     x: isize,
     y: isize,
     len: u8,
@@ -132,8 +137,5 @@ fn is_symbol(input: &str, line_length: usize, x: isize, y: isize) -> bool {
         return false;
     }
     let char = input.as_bytes()[line_length * y as usize + x as usize];
-    if !char.is_ascii_digit() && char != b'.' {
-        return true;
-    }
-    return false;
+    !char.is_ascii_digit() && char != b'.'
 }

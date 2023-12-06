@@ -2,8 +2,14 @@ use crate::types::*;
 
 pub struct Solver;
 
-impl DaySolver for Solver {
-    fn solve1(&self, input: &str, test: bool) -> String {
+impl<'a> DaySolver<'a> for Solver {
+    type Input = &'a str;
+
+    fn parse_input(input: &'a str) -> Self::Input {
+        input
+    }
+
+    fn solve1(&self, input: &Self::Input, test: bool) -> String {
         let mut sum = 0;
         let mut game_id = 1;
         for line in input.lines() {
@@ -15,7 +21,7 @@ impl DaySolver for Solver {
         sum.to_string()
     }
 
-    fn solve2(&self, input: &str, _test: bool) -> String {
+    fn solve2(&self, input: &Self::Input, _test: bool) -> String {
         let mut sum = 0;
         for line in input.lines() {
             let (a, b, c) = max_counts(line);

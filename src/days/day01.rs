@@ -2,8 +2,14 @@ use crate::types::*;
 
 pub struct Solver;
 
-impl DaySolver for Solver {
-    fn solve1(&self, input: &str, _test: bool) -> String {
+impl<'a> DaySolver<'a> for Solver {
+    type Input = &'a str;
+
+    fn parse_input(input: &'a str) -> Self::Input {
+        input
+    }
+
+    fn solve1(&self, input: &Self::Input, _test: bool) -> String {
         let sum = input.lines().fold(0u32, |acc, line| {
             if line.is_empty() {
                 return acc;
@@ -16,7 +22,7 @@ impl DaySolver for Solver {
         sum.to_string()
     }
 
-    fn solve2(&self, input: &str, test: bool) -> String {
+    fn solve2(&self, input: &Self::Input, test: bool) -> String {
         let sum = input.lines().fold(0u32, |acc, line| {
             if line.is_empty() {
                 return acc;
