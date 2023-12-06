@@ -21,12 +21,13 @@ impl DaySolver for Solver {
         test_print!(test, "line_length: {line_length}");
         let mut sum = 0;
         let numbers = find_numbers(input, line_length);
+        test_print!(test, "numbers: {numbers:?}");
         for (i, c) in input.bytes().enumerate() {
             if c == b'*' {
-                let x = (i - 1) % line_length;
-                let y = (i - 1) / line_length;
+                let x = i % line_length;
+                let y = i / line_length;
                 let numbers = touching_numbers(&numbers, x as isize, y as isize);
-                test_print!(test, "");
+                test_print!(test, "x: {x} y: {y} touching: {numbers:?}");
                 if numbers.len() == 2 {
                     sum += numbers[0] * numbers[1];
                 }
@@ -39,12 +40,17 @@ impl DaySolver for Solver {
 fn touching_numbers(numbers: &[Number], x: isize, y: isize) -> Vec<u32> {
     let mut touching = vec![];
     for num in numbers {
-        // to far up or down
-        if (num.y - y).abs() > 1 {
+        // to far up
+        if y - num.y > 1 {
             continue;
         }
+        // to far down
+        if num.y - y > 1 {
+            // if to far down no more matches can happen
+            return touching;
+        }
         // to far right
-        if num.x - num.len as isize > x + 1 {
+        if num.x - num.len as isize > x {
             continue;
         }
         // to far left
@@ -56,6 +62,7 @@ fn touching_numbers(numbers: &[Number], x: isize, y: isize) -> Vec<u32> {
     touching
 }
 
+#[derive(Debug)]
 struct Number {
     x: isize,
     y: isize,
