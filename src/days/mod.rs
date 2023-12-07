@@ -5,7 +5,7 @@ pub mod day02;
 pub mod day03;
 pub mod day04;
 
-pub const COUNT: usize = 3;
+pub const DAY_COUNT: usize = 3;
 
 pub(crate) fn solve(
     day: usize,

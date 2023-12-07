@@ -1,6 +1,6 @@
 use std::time::Duration;
 
-use crate::{calc_day, types::*};
+use aoc23::{calc_day, Task};
 
 fn test_day(day: usize, exp1: &str, exp2: &str) {
     let mut res1 = "".into();
