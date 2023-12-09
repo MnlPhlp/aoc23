@@ -33,11 +33,7 @@ impl<'a> DaySolver<'a> for Solver {
     fn solve1(&self, cards: &Self::Input, test: bool) -> String {
         let mut points = 0;
         for card in cards {
-            let matches = card
-                .your_numbers
-                .iter()
-                .filter(|n| card.winning_numbers.contains(n))
-                .count() as u32;
+            let matches = count_matches(card);
             if matches == 0 {
                 continue;
             }
@@ -47,6 +43,21 @@ impl<'a> DaySolver<'a> for Solver {
     }
 
     fn solve2(&self, cards: &Self::Input, test: bool) -> String {
-        todo!()
+        let mut card_count = vec![1; cards.len()];
+        for (i, card) in cards.iter().take(cards.len() - 1).enumerate() {
+            let matches = count_matches(card);
+            for pos in i + 1..=std::cmp::min(i + matches as usize, cards.len() - 1) {
+                card_count[pos] += card_count[i]
+            }
+        }
+        test_print!(test, "{card_count:?}");
+        card_count.iter().sum::<u32>().to_string()
     }
+}
+
+fn count_matches(card: &Card) -> u32 {
+    card.your_numbers
+        .iter()
+        .filter(|n| card.winning_numbers.contains(n))
+        .count() as u32
 }
