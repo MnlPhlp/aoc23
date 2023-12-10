@@ -1,11 +1,12 @@
 use crate::types::DaySolver;
 
-pub mod day01;
-pub mod day02;
-pub mod day03;
-pub mod day04;
+mod day01;
+mod day02;
+mod day03;
+mod day04;
+mod day05;
 
-pub const DAY_COUNT: usize = 4;
+pub const DAY_COUNT: usize = 5;
 
 pub(crate) fn solve(
     day: usize,
@@ -18,6 +19,7 @@ pub(crate) fn solve(
         2 => day02::Solver.solve(input, test, task),
         3 => day03::Solver.solve(input, test, task),
         4 => day04::Solver.solve(input, test, task),
+        5 => day05::Solver.solve(input, test, task),
         _ => panic!("invalid day"),
     }
 }
