@@ -7,7 +7,7 @@ mod day04;
 mod day05;
 mod day06;
 
-pub const DAY_COUNT: usize = 5;
+pub const DAY_COUNT: usize = 6;
 
 pub(crate) fn solve(
     day: usize,
