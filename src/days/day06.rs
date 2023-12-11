@@ -1,8 +1,8 @@
 use nom::{
-    bytes::complete::{is_not, tag, take_until, take_while1},
+    bytes::complete::{is_not, tag},
     character::complete::{self, newline},
     multi::separated_list1,
-    sequence::{delimited, terminated, tuple},
+    sequence::{delimited, tuple},
     IResult,
 };
 
@@ -33,15 +33,16 @@ impl<'a> DaySolver<'a> for Solver {
     fn solve2(&self, input: &Self::Input, test: bool) -> String {
         let (_, (time, max_dist)) = nom_parse_2(input).unwrap();
         let min = binary_search(1, time, |t| t * (time - t) > max_dist);
-        let max = binary_search_right(time, time, |t| t * (time - t) >= max_dist);
+        let max = binary_search_right(min, time, |t| t * (time - t) >= max_dist);
         test_print!(test, "min: {min}, max: {max}");
         (max - min + 1).to_string()
     }
 }
 
 fn binary_search(mut min: u64, mut max: u64, valid: impl Fn(u64) -> bool) -> u64 {
+    let mut mid = 0;
     while min < max {
-        let mid = (max + min) / 2;
+        mid = (max + min) / 2;
         if valid(mid) {
             max = mid;
         } else {
@@ -52,7 +53,7 @@ fn binary_search(mut min: u64, mut max: u64, valid: impl Fn(u64) -> bool) -> u64
 }
 
 fn binary_search_right(mut min: u64, mut max: u64, valid: impl Fn(u64) -> bool) -> u64 {
-    let mut mid = (max + min) / 2;
+    let mut mid = 0;
     while min < max {
         mid = (max + min) / 2;
         if valid(mid) {
@@ -61,7 +62,7 @@ fn binary_search_right(mut min: u64, mut max: u64, valid: impl Fn(u64) -> bool) 
             max = mid - 1;
         }
     }
-    mid
+    max
 }
 
 fn nom_parse_2(input: &str) -> IResult<&str, (u64, u64)> {
