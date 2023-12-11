@@ -1,10 +1,9 @@
+use std::collections::{hash_map::Entry, HashMap};
+
 use nom::{
     bytes::complete::{tag, take_until},
-    character::{
-        self,
-        complete::{self, multispace0},
-    },
-    multi::{count, many1, separated_list0},
+    character::complete::{self, multispace0},
+    multi::{many1, separated_list0},
     sequence::{delimited, terminated, tuple},
     IResult,
 };
@@ -15,7 +14,7 @@ pub struct Solver;
 
 #[derive(Debug)]
 pub struct SeedMaps {
-    seeds: Vec<u32>,
+    seeds: Vec<u64>,
     seed_to_soil: Mapper,
     soil_to_fert: Mapper,
     fert_to_water: Mapper,
@@ -25,7 +24,7 @@ pub struct SeedMaps {
     hum_to_loc: Mapper,
 }
 impl SeedMaps {
-    fn seed_to_loc(&self, id: u32) -> u32 {
+    fn seed_to_loc(&self, id: u64) -> u64 {
         let soil = self.seed_to_soil.map(id);
         let fert = self.soil_to_fert.map(soil);
         let water = self.fert_to_water.map(fert);
@@ -33,6 +32,16 @@ impl SeedMaps {
         let temp = self.light_to_temp.map(light);
         let hum = self.temp_to_hum.map(temp);
         self.hum_to_loc.map(hum)
+    }
+
+    fn loc_to_seed(&self, id: u64) -> Option<u64> {
+        let hum = self.hum_to_loc.map_rev(id).unwrap_or(id);
+        let temp = self.temp_to_hum.map_rev(hum).unwrap_or(hum);
+        let light = self.light_to_temp.map_rev(temp).unwrap_or(temp);
+        let water = self.water_to_light.map_rev(light).unwrap_or(light);
+        let fert = self.fert_to_water.map_rev(water).unwrap_or(water);
+        let soil = self.soil_to_fert.map_rev(fert).unwrap_or(fert);
+        self.seed_to_soil.map_rev(soil)
     }
 }
 
@@ -43,13 +52,13 @@ struct Mapper {
 
 #[derive(Debug)]
 struct Range {
-    out_start: u32,
-    in_start: u32,
-    len: u32,
+    out_start: u64,
+    in_start: u64,
+    len: u64,
 }
 
 impl Mapper {
-    fn map(&self, input: u32) -> u32 {
+    fn map(&self, input: u64) -> u64 {
         for r in self.ranges.iter() {
             if input < r.in_start {
                 continue;
@@ -61,6 +70,19 @@ impl Mapper {
             return r.out_start + offset;
         }
         input
+    }
+    fn map_rev(&self, input: u64) -> Option<u64> {
+        for r in self.ranges.iter() {
+            if input < r.out_start {
+                continue;
+            }
+            let offset = input - r.out_start;
+            if offset >= r.len {
+                continue;
+            }
+            return Some(r.in_start + offset);
+        }
+        None
     }
 }
 
@@ -74,38 +96,56 @@ impl<'a> DaySolver<'a> for Solver {
 
     fn solve1(&self, input: &Self::Input, test: bool) -> String {
         test_print!(test, "{input:#?}");
-        let min = input
+        let mut min = u64::MAX;
+        for seed in input.seeds.clone() {
+            let val = input.seed_to_loc(seed);
+            min = std::cmp::min(val, min);
+        }
+        min.to_string()
+    }
+
+    fn solve2(&self, input: &Self::Input, test: bool) -> String {
+        let seeds = input.seeds.clone();
+        let pairs = seeds.chunks(2).collect::<Vec<_>>();
+        test_print!(test, "seeds: {}, pairs: {}", input.seeds.len(), pairs.len());
+        let max = input
             .seeds
             .iter()
             .map(|seed| input.seed_to_loc(*seed))
             .min()
             .unwrap();
-        min.to_string()
-    }
-
-    fn solve2(&self, input: &Self::Input, test: bool) -> String {
-        let pairs = input.seeds.chunks(2);
-        test_print!(test, "seeds: {}, pairs: {}", input.seeds.len(), pairs.len());
-        let min = pairs
-            .map(|pair| {
-                let start = pair[0];
-                let count = pair[1];
-                (start..start + count)
-                    .map(|seed| input.seed_to_loc(seed))
-                    .min()
-                    .unwrap()
-            })
-            .min()
-            .unwrap();
+        println!("max: {max}");
+        // iterate over possible locations and find smallest possible seed
+        let mut min = u64::MAX;
+        // 'range_loop: for range in input.hum_to_loc.ranges.iter() {
+        //     for id in range.out_start..range.out_start + range.len {
+        //         if id > min {
+        //             continue 'range_loop;
+        //         }
+        for id in 0..=max {
+            if let Some(seed) = input.loc_to_seed(id) {
+                // check if valid seed
+                if pairs
+                    .iter()
+                    .any(|pair| seed >= pair[0] && seed < pair[0] + pair[1])
+                {
+                    println!("loc: {id}, seed: {seed}");
+                    assert_eq!(id, input.seed_to_loc(seed));
+                    min = id;
+                    break;
+                }
+            }
+        }
+        // }
         min.to_string()
     }
 }
 
-fn seed_list(input: &str) -> IResult<&str, Vec<u32>> {
+fn seed_list(input: &str) -> IResult<&str, Vec<u64>> {
     let (input, _) = tag("seeds:")(input)?;
     let (rest, seeds) = delimited(
         multispace0,
-        separated_list0(complete::char(' '), complete::u32),
+        separated_list0(complete::char(' '), complete::u64),
         complete::newline,
     )(input)?;
     Ok((rest, seeds))
@@ -120,11 +160,11 @@ fn mapper(input: &str) -> IResult<&str, Mapper> {
 fn range_map(input: &str) -> IResult<&str, Range> {
     let (rest, (out_start, _, in_start, _, len)) = terminated(
         tuple((
-            complete::u32,
+            complete::u64,
             complete::space1,
-            complete::u32,
+            complete::u64,
             complete::space1,
-            complete::u32,
+            complete::u64,
         )),
         complete::newline,
     )(input)?;
