@@ -5,7 +5,7 @@ pub struct Solver;
 impl<'a> DaySolver<'a> for Solver {
     type Input = &'a str;
 
-    fn parse_input(input: &'a str) -> Self::Input {
+    fn parse_input(input: &'a str, _test: bool) -> Self::Input {
         input
     }
 

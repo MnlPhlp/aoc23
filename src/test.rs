@@ -36,3 +36,8 @@ pub fn day4() {
 pub fn day5() {
     test_day(5, "178159714", "100165128")
 }
+
+#[test]
+pub fn day6() {
+    test_day(6, "1155175", "35961505")
+}

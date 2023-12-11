@@ -1,7 +1,7 @@
 use nom::{
-    bytes::complete::{tag, take_until, take_while1},
+    bytes::complete::{is_not, tag, take_until, take_while1},
     character::complete::{self, newline},
-    multi::{separated_list0, separated_list1},
+    multi::separated_list1,
     sequence::{delimited, terminated, tuple},
     IResult,
 };
@@ -11,25 +11,49 @@ use crate::types::*;
 pub struct Solver;
 
 impl<'a> DaySolver<'a> for Solver {
-    type Input = Vec<(u32, u32)>;
+    type Input = &'a str;
 
-    fn parse_input(input: &'a str) -> Self::Input {
-        let (rest, races) = nom_parse(input).unwrap();
-        dbg!(&races);
-        races
+    fn parse_input(input: &'a str, _test: bool) -> Self::Input {
+        input
     }
 
     fn solve1(&self, input: &Self::Input, test: bool) -> String {
-        todo!()
+        let (_, races) = nom_parse_1(input).unwrap();
+        test_print!(test, "races: {races:?}");
+        let mut res = 1;
+        for (time, max_dist) in races {
+            let min = (1..time).find(|t| t * (time - t) > max_dist).unwrap();
+            let max = (min..time).find(|t| t * (time - t) <= max_dist).unwrap();
+            test_print!(test, "min: {min}, max: {max}");
+            res *= max - min;
+        }
+        res.to_string()
     }
 
     fn solve2(&self, input: &Self::Input, test: bool) -> String {
-        todo!()
+        let (_, (time, max_dist)) = nom_parse_2(input).unwrap();
+        let min = (1..time).find(|t| t * (time - t) > max_dist).unwrap();
+        let max = (1..time).rfind(|t| t * (time - t) >= max_dist).unwrap();
+        test_print!(test, "min: {min}, max: {max}");
+        (max - min + 1).to_string()
     }
 }
 
-fn nom_parse(input: &str) -> IResult<&str, Vec<(u32, u32)>> {
-    let (rest, (times, _, distances)) =
+fn nom_parse_2(input: &str) -> IResult<&str, (u64, u64)> {
+    let (_, (time, distance)) = tuple((num("Time:"), num("Distance:")))(input)?;
+    Ok(("", (time, distance)))
+}
+
+fn num(key: &'static str) -> impl Fn(&str) -> IResult<&str, u64> {
+    move |input| {
+        let (rest, numbers) = delimited(tag(key), is_not("\n"), complete::newline)(input)?;
+        let num = numbers.replace(' ', "").parse().unwrap();
+        Ok((rest, num))
+    }
+}
+
+fn nom_parse_1(input: &str) -> IResult<&str, Vec<(u32, u32)>> {
+    let (_, (times, _, distances)) =
         tuple((num_list("Time:"), newline, num_list("Distance:")))(input)?;
     Ok(("", times.into_iter().zip(distances).collect()))
 }
@@ -37,12 +61,7 @@ fn nom_parse(input: &str) -> IResult<&str, Vec<(u32, u32)>> {
 fn num_list(key: &'static str) -> impl Fn(&str) -> IResult<&str, Vec<u32>> {
     move |input| {
         let (input, _) = tuple((tag(key), complete::space0))(input)?;
-        println!("input: {input}");
-        let (rest, seeds) = delimited(
-            complete::space0,
-            separated_list0(complete::space0, complete::u32),
-            complete::newline,
-        )(input)?;
+        let (rest, seeds) = separated_list1(complete::space1, complete::u32)(input)?;
         Ok((rest, seeds))
     }
 }

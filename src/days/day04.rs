@@ -10,7 +10,7 @@ pub struct Card {
 impl<'a> DaySolver<'a> for Solver {
     type Input = Vec<Card>;
 
-    fn parse_input(input: &'a str) -> Self::Input {
+    fn parse_input(input: &'a str, _test: bool) -> Self::Input {
         let mut cards = Vec::with_capacity(input.lines().count());
         for line in input.lines() {
             if line.is_empty() {

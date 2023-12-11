@@ -89,7 +89,7 @@ impl Mapper {
 impl<'a> DaySolver<'a> for Solver {
     type Input = SeedMaps;
 
-    fn parse_input(input: &'a str) -> Self::Input {
+    fn parse_input(input: &'a str, _test: bool) -> Self::Input {
         let (_, parsed) = nom_parse(input).unwrap();
         parsed
     }

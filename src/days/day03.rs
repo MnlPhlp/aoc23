@@ -5,7 +5,7 @@ pub struct Solver;
 impl<'a> DaySolver<'a> for Solver {
     type Input = (&'a str, usize, Vec<Number>);
 
-    fn parse_input(input: &'a str) -> Self::Input {
+    fn parse_input(input: &'a str, _test: bool) -> Self::Input {
         let line_length = input.find('\n').unwrap() + 1;
         (input, line_length, find_numbers(input, line_length))
     }

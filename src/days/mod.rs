@@ -15,14 +15,13 @@ pub(crate) fn solve(
     test: bool,
     task: crate::types::Task,
 ) -> (String, String) {
-    print!("day {day:>2}: ");
     match day {
-        1 => day01::Solver.solve(input, test, task),
-        2 => day02::Solver.solve(input, test, task),
-        3 => day03::Solver.solve(input, test, task),
-        4 => day04::Solver.solve(input, test, task),
-        5 => day05::Solver.solve(input, test, task),
-        6 => day06::Solver.solve(input, test, task),
+        1 => day01::Solver.solve(day, input, test, task),
+        2 => day02::Solver.solve(day, input, test, task),
+        3 => day03::Solver.solve(day, input, test, task),
+        4 => day04::Solver.solve(day, input, test, task),
+        5 => day05::Solver.solve(day, input, test, task),
+        6 => day06::Solver.solve(day, input, test, task),
         _ => panic!("invalid day"),
     }
 }
