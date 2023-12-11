@@ -108,36 +108,40 @@ impl<'a> DaySolver<'a> for Solver {
         let seeds = input.seeds.clone();
         let pairs = seeds.chunks(2).collect::<Vec<_>>();
         test_print!(test, "seeds: {}, pairs: {}", input.seeds.len(), pairs.len());
-        let max = input
+        // get starting max value by using part 1 rules
+        let mut max = input
             .seeds
             .iter()
             .map(|seed| input.seed_to_loc(*seed))
             .min()
             .unwrap();
-        println!("max: {max}");
         // iterate over possible locations and find smallest possible seed
-        let mut min = u64::MAX;
-        // 'range_loop: for range in input.hum_to_loc.ranges.iter() {
-        //     for id in range.out_start..range.out_start + range.len {
-        //         if id > min {
-        //             continue 'range_loop;
-        //         }
-        for id in 0..=max {
-            if let Some(seed) = input.loc_to_seed(id) {
+        // start with big steps and get smaller after overshooting
+        let mut min = 0;
+        let mut loc = 0;
+        let mut step = 10000;
+        loop {
+            if loc < max {
+                loc += step;
+            } else if step == 1 {
+                break;
+            } else {
+                step /= 10;
+                loc = min;
+            }
+            if let Some(seed) = input.loc_to_seed(loc) {
                 // check if valid seed
                 if pairs
                     .iter()
                     .any(|pair| seed >= pair[0] && seed < pair[0] + pair[1])
                 {
-                    println!("loc: {id}, seed: {seed}");
-                    assert_eq!(id, input.seed_to_loc(seed));
-                    min = id;
-                    break;
+                    test_print!(test, "loc: {loc}, seed: {seed}");
+                    min = loc - step;
+                    max = loc;
                 }
             }
         }
-        // }
-        min.to_string()
+        loc.to_string()
     }
 }
 
