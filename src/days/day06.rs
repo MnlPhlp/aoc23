@@ -32,11 +32,36 @@ impl<'a> DaySolver<'a> for Solver {
 
     fn solve2(&self, input: &Self::Input, test: bool) -> String {
         let (_, (time, max_dist)) = nom_parse_2(input).unwrap();
-        let min = (1..time).find(|t| t * (time - t) > max_dist).unwrap();
-        let max = (1..time).rfind(|t| t * (time - t) >= max_dist).unwrap();
+        let min = binary_search(1, time, |t| t * (time - t) > max_dist);
+        let max = binary_search_right(time, time, |t| t * (time - t) >= max_dist);
         test_print!(test, "min: {min}, max: {max}");
         (max - min + 1).to_string()
     }
+}
+
+fn binary_search(mut min: u64, mut max: u64, valid: impl Fn(u64) -> bool) -> u64 {
+    while min < max {
+        let mid = (max + min) / 2;
+        if valid(mid) {
+            max = mid;
+        } else {
+            min = mid + 1;
+        }
+    }
+    min
+}
+
+fn binary_search_right(mut min: u64, mut max: u64, valid: impl Fn(u64) -> bool) -> u64 {
+    let mut mid = (max + min) / 2;
+    while min < max {
+        mid = (max + min) / 2;
+        if valid(mid) {
+            min = mid + 1;
+        } else {
+            max = mid - 1;
+        }
+    }
+    mid
 }
 
 fn nom_parse_2(input: &str) -> IResult<&str, (u64, u64)> {
