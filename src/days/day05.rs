@@ -1,5 +1,3 @@
-use std::collections::{hash_map::Entry, HashMap};
-
 use nom::{
     bytes::complete::{tag, take_until},
     character::complete::{self, multispace0},

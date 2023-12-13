@@ -1,7 +1,4 @@
-use std::{
-    collections::{hash_map::Entry, HashMap},
-    time::Instant,
-};
+use std::collections::HashMap;
 
 use nom::{
     bytes::complete::{is_a, tag},
@@ -66,7 +63,7 @@ impl<'a> DaySolver<'a> for Solver {
         map
     }
 
-    fn solve1(&self, map: &Self::Input, test: bool) -> String {
+    fn solve1(&self, map: &Self::Input, _test: bool) -> String {
         count_moves("AAA", map, |p| p == "ZZZ").to_string()
     }
 
@@ -80,6 +77,8 @@ impl<'a> DaySolver<'a> for Solver {
         let move_counts = pos
             .map(|p| count_moves(p, map, |p| p.ends_with('Z')))
             .collect::<Vec<_>>();
+
+        test_print!(test, "move counts: {move_counts:#?}");
 
         // find smallest common multiple
         let mut steps = move_counts[0];

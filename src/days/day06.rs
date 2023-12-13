@@ -40,7 +40,7 @@ impl<'a> DaySolver<'a> for Solver {
 }
 
 fn binary_search(mut min: u64, mut max: u64, valid: impl Fn(u64) -> bool) -> u64 {
-    let mut mid = 0;
+    let mut mid;
     while min < max {
         mid = (max + min) / 2;
         if valid(mid) {
@@ -53,7 +53,7 @@ fn binary_search(mut min: u64, mut max: u64, valid: impl Fn(u64) -> bool) -> u64
 }
 
 fn binary_search_right(mut min: u64, mut max: u64, valid: impl Fn(u64) -> bool) -> u64 {
-    let mut mid = 0;
+    let mut mid;
     while min < max {
         mid = (max + min) / 2;
         if valid(mid) {

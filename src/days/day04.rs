@@ -30,7 +30,7 @@ impl<'a> DaySolver<'a> for Solver {
         cards
     }
 
-    fn solve1(&self, cards: &Self::Input, test: bool) -> String {
+    fn solve1(&self, cards: &Self::Input, _test: bool) -> String {
         let mut points = 0;
         for card in cards {
             let matches = count_matches(card);
