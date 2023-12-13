@@ -19,8 +19,8 @@ pub fn calc_day(
     if test {
         println!("\n##################\ncalculating day {day} \n##################\n");
     }
-    let start = Instant::now();
     let input = util::read_input(day, test);
+    let start = Instant::now();
     let (res1, res2) = days::solve(day, &input, test, task);
     *time = Instant::now().duration_since(start);
     *result1 = res1;

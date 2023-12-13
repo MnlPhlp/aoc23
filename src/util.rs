@@ -9,5 +9,9 @@ pub fn read_input(day: usize, test: bool) -> String {
     let mut contents = String::new();
     file.read_to_string(&mut contents)
         .expect("Something went wrong reading the file");
+    #[cfg(target_os = "windows")]
+    {
+        contents = contents.replace("\r\n", "\n");
+    }
     contents
 }
