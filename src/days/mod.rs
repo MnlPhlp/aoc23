@@ -9,8 +9,9 @@ mod day06;
 mod day07;
 mod day08;
 mod day09;
+mod day10;
 
-pub const DAY_COUNT: usize = 9;
+pub const DAY_COUNT: usize = 10;
 
 pub(crate) fn solve(
     day: usize,
@@ -29,6 +30,7 @@ pub(crate) fn solve(
         7 => day07::Solver.solve(day, input, test, task, print_times),
         8 => day08::Solver.solve(day, input, test, task, print_times),
         9 => day09::Solver.solve(day, input, test, task, print_times),
+        10 => day10::Solver.solve(day, input, test, task, print_times),
         _ => panic!("invalid day"),
     }
 }

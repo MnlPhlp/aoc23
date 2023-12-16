@@ -64,3 +64,8 @@ pub fn day8() {
 pub fn day9() {
     test_day(9, "1939607039", "1041")
 }
+
+#[test]
+pub fn day10() {
+    test_day(10, "6733", "435")
+}

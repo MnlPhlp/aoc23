@@ -52,6 +52,72 @@ macro_rules! test_print {
         }
     };
 }
-use std::time::Instant;
+use std::{fmt::Display, time::Instant};
 
 pub(crate) use test_print;
+
+#[derive(Debug, PartialEq, Copy, Clone)]
+pub struct Direction {
+    pub x: i32,
+    pub y: i32,
+}
+
+impl Direction {
+    pub fn new(x: i32, y: i32) -> Self {
+        Self { x, y }
+    }
+}
+
+impl PartialEq<(i32, i32)> for Direction {
+    fn eq(&self, other: &(i32, i32)) -> bool {
+        self.x == other.0 && self.y == other.1
+    }
+}
+
+impl Display for Direction {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let c = match (self.x, self.y) {
+            (0, -1) => '^',
+            (-1, 0) => '<',
+            (1, 0) => '>',
+            (0, 1) => 'v',
+            _ => '?',
+        };
+        write!(f, "{}", c)
+    }
+}
+
+#[derive(Debug, PartialEq, Copy, Clone, Eq, Hash)]
+pub struct Position {
+    pub x: usize,
+    pub y: usize,
+}
+
+impl Position {
+    pub fn new(x: usize, y: usize) -> Self {
+        Self { x, y }
+    }
+}
+
+impl std::ops::Add<Direction> for Position {
+    type Output = Self;
+
+    fn add(self, rhs: Direction) -> Self::Output {
+        Self {
+            x: (self.x as i32 + rhs.x) as usize,
+            y: (self.y as i32 + rhs.y) as usize,
+        }
+    }
+}
+
+impl std::ops::AddAssign<Direction> for Position {
+    fn add_assign(&mut self, rhs: Direction) {
+        *self = *self + rhs;
+    }
+}
+
+impl Display for Position {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "[{}, {}]", self.x, self.y)
+    }
+}

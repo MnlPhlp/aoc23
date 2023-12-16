@@ -25,6 +25,8 @@ struct Args {
     task: i32,
     #[clap(short, long, default_value = "false")]
     parallel: bool,
+    #[clap(long)]
+    day_string: Option<String>,
 }
 
 fn main() {
@@ -38,7 +40,10 @@ fn main() {
     } else {
         Task::Both
     };
-    let day = args.day;
+    let day = match args.day_string {
+        Some(day) => day.replace("day", "").parse::<usize>().unwrap_or(args.day),
+        None => args.day,
+    };
     let parallel = args.parallel;
 
     let days = if day == 0 {
