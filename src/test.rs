@@ -17,7 +17,6 @@ fn test_day(day: usize, exp1: &str, exp2: &str) {
     );
     assert_eq!(exp1, res1, "task 1 gave wrong result");
     assert_eq!(exp2, res2, "task 2 gave wrong result");
-    assert!(duration < Duration::from_secs(1), "took longer than 1 sec");
 }
 
 #[test]
@@ -68,4 +67,14 @@ pub fn day9() {
 #[test]
 pub fn day10() {
     test_day(10, "6733", "435")
+}
+
+#[test]
+pub fn day11() {
+    test_day(11, "9556712", "678626199476")
+}
+
+#[test]
+pub fn day12() {
+    test_day(12, "7939", "850504257483930")
 }

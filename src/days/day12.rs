@@ -61,10 +61,7 @@ fn row(input: &str) -> IResult<&str, Row> {
 }
 
 fn possible_solutions(row: &Row) -> usize {
-    let (line, groups) = filter_matching(row.line.to_string(), row.groups.clone());
-    let line = line.as_bytes();
-    let groups = groups.into_iter().collect::<Vec<_>>();
-    possible_solutions_rec(line, &groups)
+    possible_solutions_rec(row.line.as_bytes(), &row.groups)
 }
 
 fn possible_solutions_rec(line: &[u8], groups: &[usize]) -> usize {
@@ -103,32 +100,6 @@ fn possible_solutions_rec(line: &[u8], groups: &[usize]) -> usize {
         }
     }
     num_arrangements
-}
-
-fn filter_matching(mut line: String, mut groups: Vec<usize>) -> (String, Vec<usize>) {
-    line = line.trim_matches('.').to_string();
-    // remove matching groups from start of line
-    'outer: for g in 0..groups.len() {
-        let mut current = 0;
-        let mut start = 0;
-        for (i, c) in line.chars().enumerate() {
-            if c == '?' {
-                break 'outer;
-            } else if c == '#' {
-                if current == 0 {
-                    start = i;
-                }
-                current += 1;
-            } else if current == groups[g] {
-                line.replace_range(start..i, "");
-                line = line.trim_matches('.').to_string();
-                groups[g] = 0;
-                break;
-            }
-        }
-    }
-    groups = groups.into_iter().filter(|&g| g > 0).collect();
-    (line, groups)
 }
 
 fn min_size(groups: &[usize]) -> usize {
