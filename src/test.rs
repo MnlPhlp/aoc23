@@ -6,7 +6,15 @@ fn test_day(day: usize, exp1: &str, exp2: &str) {
     let mut res1 = "".into();
     let mut res2 = "".into();
     let mut duration = Duration::default();
-    calc_day(day, &mut res1, &mut res2, &mut duration, false, Task::Both);
+    calc_day(
+        day,
+        &mut res1,
+        &mut res2,
+        &mut duration,
+        false,
+        Task::Both,
+        false,
+    );
     assert_eq!(exp1, res1, "task 1 gave wrong result");
     assert_eq!(exp2, res2, "task 2 gave wrong result");
     assert!(duration < Duration::from_secs(1), "took longer than 1 sec");
@@ -50,4 +58,9 @@ pub fn day7() {
 #[test]
 pub fn day8() {
     test_day(8, "21389", "21083806112641")
+}
+
+#[test]
+pub fn day9() {
+    test_day(9, "1939607039", "1041")
 }

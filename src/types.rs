@@ -10,7 +10,14 @@ pub trait DaySolver<'a> {
 
     fn parse_input(input: &'a str, test: bool) -> Self::Input;
 
-    fn solve(&self, day: usize, input: &'a str, test: bool, task: Task) -> (String, String) {
+    fn solve(
+        &self,
+        day: usize,
+        input: &'a str,
+        test: bool,
+        task: Task,
+        print_times: bool,
+    ) -> (String, String) {
         let mut res1 = "".into();
         let mut res2 = "".into();
         let start = Instant::now();
@@ -26,7 +33,11 @@ pub trait DaySolver<'a> {
             res2 = self.solve2(&input, test);
         }
         let t2 = start.elapsed();
-        println!("day: {day:>2} parsing: {parsing:>8.2?}, task 1: {t1:>8.2?}, task 2: {t2:>8.2?}");
+        if print_times {
+            println!(
+                "day: {day:>2} parsing: {parsing:>8.2?}, task 1: {t1:>8.2?}, task 2: {t2:>8.2?}"
+            );
+        }
         (res1, res2)
     }
 
