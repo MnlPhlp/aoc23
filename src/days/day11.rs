@@ -5,7 +5,7 @@ pub struct Solver;
 impl<'a> DaySolver<'a> for Solver {
     type Input = Vec<Vec<bool>>;
 
-    fn parse_input(input: &'a str, test: bool) -> Self::Input {
+    fn parse_input(input: &'a str, _test: bool) -> Self::Input {
         let mut map = Vec::new();
         for line in input.lines() {
             let row = line

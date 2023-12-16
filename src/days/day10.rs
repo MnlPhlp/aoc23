@@ -1,4 +1,4 @@
-use std::{collections::HashMap, fmt::Display, io::Write, time::Instant};
+use std::{collections::HashMap, fmt::Display};
 
 use nom::{
     character::complete::{newline, one_of},
@@ -83,7 +83,7 @@ impl<'a> DaySolver<'a> for Solver {
         parsed
     }
 
-    fn solve1(&self, path: &Self::Input, test: bool) -> String {
+    fn solve1(&self, path: &Self::Input, _test: bool) -> String {
         (path.len() / 2).to_string()
     }
 
