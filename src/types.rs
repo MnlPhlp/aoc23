@@ -97,6 +97,11 @@ impl Position {
     pub fn new(x: usize, y: usize) -> Self {
         Self { x, y }
     }
+
+    pub fn distance(&self, other: &Self) -> usize {
+        (self.x as i32 - other.x as i32).abs() as usize
+            + (self.y as i32 - other.y as i32).abs() as usize
+    }
 }
 
 impl std::ops::Add<Direction> for Position {
