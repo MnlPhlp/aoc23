@@ -99,8 +99,8 @@ impl Position {
     }
 
     pub fn distance(&self, other: &Self) -> usize {
-        (self.x as i32 - other.x as i32).abs() as usize
-            + (self.y as i32 - other.y as i32).abs() as usize
+        (self.x as i32 - other.x as i32).unsigned_abs() as usize
+            + (self.y as i32 - other.y as i32).unsigned_abs() as usize
     }
 }
 

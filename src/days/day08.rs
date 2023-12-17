@@ -82,8 +82,8 @@ impl<'a> DaySolver<'a> for Solver {
 
         // find smallest common multiple
         let mut steps = move_counts[0];
-        for i in 1..move_counts.len() {
-            steps = num::integer::lcm(steps, move_counts[i]);
+        for count in move_counts.iter().skip(1) {
+            steps = num::integer::lcm(steps, *count);
         }
 
         steps.to_string()

@@ -61,9 +61,9 @@ impl<'a> DaySolver<'a> for Solver {
 fn find_diffs(row: &[i32]) -> Vec<i32> {
     let mut last = row[0];
     let mut diffs = Vec::with_capacity(row.len() - 1);
-    for i in 1..row.len() {
-        diffs.push(row[i] - last);
-        last = row[i];
+    for d in row.iter().skip(1) {
+        diffs.push(d - last);
+        last = *d;
     }
     diffs
 }

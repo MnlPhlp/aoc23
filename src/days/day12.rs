@@ -109,11 +109,11 @@ fn min_size(groups: &[usize]) -> usize {
     groups.iter().sum::<usize>() + groups.len() - 1
 }
 
-fn unfold<'a>(rows: &Vec<Row>) -> Vec<Row> {
-    rows.iter().map(|r| unfold_row(r)).collect()
+fn unfold(rows: &[Row]) -> Vec<Row> {
+    rows.iter().map(unfold_row).collect()
 }
 
-fn unfold_row<'a>(r: &Row) -> Row {
+fn unfold_row(r: &Row) -> Row {
     let mut line = String::with_capacity(r.line.len() * 5 + 4);
     for i in 0..5 {
         line += &r.line;

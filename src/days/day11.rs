@@ -50,8 +50,8 @@ fn expand(map: &[Vec<bool>], expand: usize) -> Vec<Position> {
     let mut empty_columns = Vec::new();
     for x in 0..map[0].len() {
         let mut empty = true;
-        for y in 0..map.len() {
-            if map[y][x] {
+        for row in map {
+            if row[x] {
                 empty = false;
                 break;
             }

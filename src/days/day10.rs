@@ -79,8 +79,8 @@ impl<'a> DaySolver<'a> for Solver {
 
     fn parse_input(input: &'a str, test: bool) -> Self::Input {
         let (_, segments) = nom_parse(input).unwrap();
-        let parsed = find_loop(test, segments);
-        parsed
+
+        find_loop(test, segments)
     }
 
     fn solve1(&self, path: &Self::Input, _test: bool) -> String {
@@ -90,7 +90,7 @@ impl<'a> DaySolver<'a> for Solver {
     fn solve2(&self, path: &Self::Input, test: bool) -> String {
         if test {
             print!("Path: [");
-            for (pos, _) in path {
+            for pos in path.keys() {
                 print!("{}, ", pos);
             }
             println!("]");
@@ -100,7 +100,7 @@ impl<'a> DaySolver<'a> for Solver {
         let mut min_y = usize::MAX;
         let mut max_x = usize::MIN;
         let mut max_y = usize::MIN;
-        for (pos, _) in path {
+        for pos in path.keys() {
             if pos.x < min_x {
                 min_x = pos.x;
             }
