@@ -1,5 +1,7 @@
 use std::collections::HashMap;
 
+use rayon::prelude::*;
+
 use crate::types::*;
 
 pub struct Solver;
@@ -16,47 +18,59 @@ impl<'a> DaySolver<'a> for Solver {
     }
 
     fn solve2(&self, input: &Self::Input, test: bool) -> String {
-        let mut max = 0;
-        for y in 0..input.len() {
-            for x in 0..input[0].len() {
-                if y == 0 {
-                    //  check going down
-                    let count =
-                        count_energized_tiles(Position::new(x, y), Direction::new(0, 1), input);
-                    if count > max {
-                        max = count;
-                        test_print!(test, "best_starting pos: ({x},{y})");
+        let max = (0..input.len())
+            .collect::<Vec<_>>()
+            .par_iter()
+            .map(|&y| {
+                let mut max = 0;
+                for x in 0..input[0].len() {
+                    if y == 0 {
+                        //  check going down
+                        let count =
+                            count_energized_tiles(Position::new(x, y), Direction::new(0, 1), input);
+                        if count > max {
+                            max = count;
+                            test_print!(test, "best_starting pos: ({x},{y})");
+                        }
+                    }
+                    if x == 0 {
+                        // check going right
+                        let count =
+                            count_energized_tiles(Position::new(x, y), Direction::new(1, 0), input);
+                        if count > max {
+                            max = count;
+                            test_print!(test, "best_starting pos: ({x},{y})");
+                        }
+                    }
+                    if x == input[0].len() - 1 {
+                        // check going left
+                        let count = count_energized_tiles(
+                            Position::new(x, y),
+                            Direction::new(-1, 0),
+                            input,
+                        );
+                        if count > max {
+                            max = count;
+                            test_print!(test, "best_starting pos: ({x},{y})");
+                        }
+                    }
+                    if y == input.len() - 1 {
+                        // check going up
+                        let count = count_energized_tiles(
+                            Position::new(x, y),
+                            Direction::new(0, -1),
+                            input,
+                        );
+                        if count > max {
+                            max = count;
+                            test_print!(test, "best_starting pos: ({x},{y})");
+                        }
                     }
                 }
-                if x == 0 {
-                    // check going right
-                    let count =
-                        count_energized_tiles(Position::new(x, y), Direction::new(1, 0), input);
-                    if count > max {
-                        max = count;
-                        test_print!(test, "best_starting pos: ({x},{y})");
-                    }
-                }
-                if x == input[0].len() - 1 {
-                    // check going left
-                    let count =
-                        count_energized_tiles(Position::new(x, y), Direction::new(-1, 0), input);
-                    if count > max {
-                        max = count;
-                        test_print!(test, "best_starting pos: ({x},{y})");
-                    }
-                }
-                if y == input.len() - 1 {
-                    // check going up
-                    let count =
-                        count_energized_tiles(Position::new(x, y), Direction::new(0, -1), input);
-                    if count > max {
-                        max = count;
-                        test_print!(test, "best_starting pos: ({x},{y})");
-                    }
-                }
-            }
-        }
+                max
+            })
+            .max()
+            .unwrap();
         max.to_string()
     }
 }
