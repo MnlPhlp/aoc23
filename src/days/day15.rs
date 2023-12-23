@@ -1,7 +1,6 @@
 use std::collections::{hash_map::Entry, HashMap};
 
 use nom::{bytes::complete::is_not, character::complete, multi::separated_list1, IResult};
-use rayon::vec;
 
 use crate::types::*;
 
@@ -27,9 +26,8 @@ impl<'a> DaySolver<'a> for Solver {
     fn solve2(&self, input: &Self::Input, test: bool) -> String {
         let mut boxes: HashMap<u8, Vec<(&str, u8)>> = HashMap::new();
         for input in input {
-            if input.ends_with('-') {
-                let lbl = &input[..input.len() - 1];
-                if let Entry::Occupied(mut b) = boxes.entry(hash(&lbl)) {
+            if let Some(lbl) = input.strip_suffix('-') {
+                if let Entry::Occupied(mut b) = boxes.entry(hash(lbl)) {
                     let b = b.get_mut();
                     if let Some(idx) = b.iter().position(|(lense, _)| lense == &lbl) {
                         b.remove(idx);
@@ -38,7 +36,7 @@ impl<'a> DaySolver<'a> for Solver {
             } else {
                 let (lbl, val) = input.split_once('=').unwrap();
                 let val = val.parse::<u8>().unwrap();
-                let b = boxes.entry(hash(lbl)).or_insert(vec![]);
+                let b = boxes.entry(hash(lbl)).or_default();
                 if let Some(e) = b.iter_mut().find(|(lense, _)| lense == &lbl) {
                     e.1 = val;
                 } else {
