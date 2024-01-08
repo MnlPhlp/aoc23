@@ -70,7 +70,7 @@ fn expand(map: &[Vec<bool>], expand: usize) -> Vec<Position> {
                 let y = y + empty_rows;
                 let columns = empty_columns.iter().filter(|&&c| c < x).count();
                 let x = x + columns * expand - columns;
-                galaxies.push(Position::new(x, y));
+                galaxies.push(Position::new(x as i32, y as i32));
             }
         }
         if empty {

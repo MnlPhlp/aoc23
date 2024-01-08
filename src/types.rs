@@ -89,18 +89,29 @@ impl Display for Direction {
 
 #[derive(Debug, PartialEq, Copy, Clone, Eq, Hash)]
 pub struct Position {
-    pub x: usize,
-    pub y: usize,
+    pub x: i32,
+    pub y: i32,
 }
 
 impl Position {
-    pub fn new(x: usize, y: usize) -> Self {
-        Self { x, y }
+    pub fn new<T: Into<i32>>(x: T, y: T) -> Self {
+        Self {
+            x: x.into(),
+            y: y.into(),
+        }
     }
 
     pub fn distance(&self, other: &Self) -> usize {
-        (self.x as i32 - other.x as i32).unsigned_abs() as usize
-            + (self.y as i32 - other.y as i32).unsigned_abs() as usize
+        (self.x - other.x).unsigned_abs() as usize + (self.y - other.y).unsigned_abs() as usize
+    }
+
+    pub(crate) fn neighbors(&self) -> [Position; 4] {
+        [
+            Position::new(self.x, self.y - 1),
+            Position::new(self.x + 1, self.y),
+            Position::new(self.x, self.y + 1),
+            Position::new(self.x - 1, self.y),
+        ]
     }
 }
 
@@ -109,8 +120,8 @@ impl std::ops::Add<Direction> for Position {
 
     fn add(self, rhs: Direction) -> Self::Output {
         Self {
-            x: (self.x as i32 + rhs.x) as usize,
-            y: (self.y as i32 + rhs.y) as usize,
+            x: self.x + rhs.x,
+            y: self.y + rhs.y,
         }
     }
 }

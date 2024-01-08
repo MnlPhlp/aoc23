@@ -96,10 +96,10 @@ impl<'a> DaySolver<'a> for Solver {
             println!("]");
         }
         // find outermost positions
-        let mut min_x = usize::MAX;
-        let mut min_y = usize::MAX;
-        let mut max_x = usize::MIN;
-        let mut max_y = usize::MIN;
+        let mut min_x = i32::MAX;
+        let mut min_y = i32::MAX;
+        let mut max_x = i32::MIN;
+        let mut max_y = i32::MIN;
         for pos in path.keys() {
             if pos.x < min_x {
                 min_x = pos.x;
@@ -143,8 +143,8 @@ fn find_loop(test: bool, input: Vec<Vec<PipeSegment>>) -> HashMap<Position, Pipe
     for (y, row) in input.iter().enumerate() {
         for (x, segment) in row.iter().enumerate() {
             if *segment == PipeSegment::Start {
-                pos1 = Position::new(x, y);
-                pos2 = Position::new(x, y);
+                pos1 = Position::new(x as i32, y as i32);
+                pos2 = Position::new(x as i32, y as i32);
             }
         }
     }
@@ -153,8 +153,8 @@ fn find_loop(test: bool, input: Vec<Vec<PipeSegment>>) -> HashMap<Position, Pipe
     // and move there to start
     let mut dir1 = Direction::new(0, 0);
     let mut dir2 = Direction::new(0, 0);
-    let start_x = pos1.x as i32;
-    let start_y = pos1.y as i32;
+    let start_x = pos1.x;
+    let start_y = pos1.y;
     let mut start_dir = (0, 0, 0, 0);
     for &(dir_x, dir_y) in &[(0, -1), (0, 1), (1, 0), (-1, 0)] {
         let x = start_x + dir_x;
@@ -165,13 +165,13 @@ fn find_loop(test: bool, input: Vec<Vec<PipeSegment>>) -> HashMap<Position, Pipe
         let segment = input[y as usize][x as usize];
         if let Some(dir) = segment.get_direction(Direction::new(dir_x, dir_y)) {
             if dir1 == (0, 0) {
-                pos1 = Position::new(x as usize, y as usize);
+                pos1 = Position::new(x, y);
                 dir1 = dir;
                 start_dir.0 = dir_x;
                 start_dir.1 = dir_y;
                 path.insert(pos1, segment);
             } else {
-                pos2 = Position::new(x as usize, y as usize);
+                pos2 = Position::new(x, y);
                 dir2 = dir;
                 start_dir.2 = dir_x;
                 start_dir.3 = dir_y;
@@ -194,20 +194,19 @@ fn find_loop(test: bool, input: Vec<Vec<PipeSegment>>) -> HashMap<Position, Pipe
         _ => panic!("invalid starting direction"),
     };
     // add Starting segment
-    path.insert(
-        Position::new(start_x as usize, start_y as usize),
-        start_segment,
-    );
+    path.insert(Position::new(start_x, start_y), start_segment);
     // find loop
     while pos1 != pos2 {
         test_print!(test, "pos1: {pos1} {dir1}; pos2: {pos2:?} {dir2}");
         pos1 += dir1;
-        let segment = input[pos1.y][pos1.x];
+        let segment = input[pos1.y as usize][pos1.x as usize];
         dir1 = segment.get_direction(dir1).unwrap();
         path.insert(pos1, segment);
         pos2 += dir2;
-        let segment = input[pos2.y][pos2.x];
-        dir2 = input[pos2.y][pos2.x].get_direction(dir2).unwrap();
+        let segment = input[pos2.y as usize][pos2.x as usize];
+        dir2 = input[pos2.y as usize][pos2.x as usize]
+            .get_direction(dir2)
+            .unwrap();
         path.insert(pos2, segment);
     }
     path

@@ -26,8 +26,11 @@ impl<'a> DaySolver<'a> for Solver {
                 for x in 0..input[0].len() {
                     if y == 0 {
                         //  check going down
-                        let count =
-                            count_energized_tiles(Position::new(x, y), Direction::new(0, 1), input);
+                        let count = count_energized_tiles(
+                            Position::new(x as i32, y as i32),
+                            Direction::new(0, 1),
+                            input,
+                        );
                         if count > max {
                             max = count;
                             test_print!(test, "best_starting pos: ({x},{y})");
@@ -35,8 +38,11 @@ impl<'a> DaySolver<'a> for Solver {
                     }
                     if x == 0 {
                         // check going right
-                        let count =
-                            count_energized_tiles(Position::new(x, y), Direction::new(1, 0), input);
+                        let count = count_energized_tiles(
+                            Position::new(x as i32, y as i32),
+                            Direction::new(1, 0),
+                            input,
+                        );
                         if count > max {
                             max = count;
                             test_print!(test, "best_starting pos: ({x},{y})");
@@ -45,7 +51,7 @@ impl<'a> DaySolver<'a> for Solver {
                     if x == input[0].len() - 1 {
                         // check going left
                         let count = count_energized_tiles(
-                            Position::new(x, y),
+                            Position::new(x as i32, y as i32),
                             Direction::new(-1, 0),
                             input,
                         );
@@ -57,7 +63,7 @@ impl<'a> DaySolver<'a> for Solver {
                     if y == input.len() - 1 {
                         // check going up
                         let count = count_energized_tiles(
-                            Position::new(x, y),
+                            Position::new(x as i32, y as i32),
                             Direction::new(0, -1),
                             input,
                         );
@@ -85,7 +91,7 @@ fn count_energized_tiles(start_pos: Position, start_dir: Direction, input: &[Vec
         // follow bean until reaching existing beam or leaving the grid
         loop {
             // stop if out of grid
-            if pos.x >= input[0].len() || pos.y >= input.len() {
+            if pos.x >= input[0].len() as i32 || pos.y >= input.len() as i32 {
                 break;
             }
             // stop if beam already energized
@@ -96,7 +102,7 @@ fn count_energized_tiles(start_pos: Position, start_dir: Direction, input: &[Vec
             }
             energized.insert(pos, dir);
             // split or redirect beam
-            dir = match input[pos.y][pos.x] {
+            dir = match input[pos.y as usize][pos.x as usize] {
                 b'/' => Direction::new(-dir.y, -dir.x),
                 b'\\' => Direction::new(dir.y, dir.x),
                 b'|' if dir.x != 0 => {
