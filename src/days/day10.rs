@@ -96,10 +96,10 @@ impl<'a> DaySolver<'a> for Solver {
             println!("]");
         }
         // find outermost positions
-        let mut min_x = i32::MAX;
-        let mut min_y = i32::MAX;
-        let mut max_x = i32::MIN;
-        let mut max_y = i32::MIN;
+        let mut min_x = i64::MAX;
+        let mut min_y = i64::MAX;
+        let mut max_x = i64::MIN;
+        let mut max_y = i64::MIN;
         for pos in path.keys() {
             if pos.x < min_x {
                 min_x = pos.x;
@@ -159,7 +159,7 @@ fn find_loop(test: bool, input: Vec<Vec<PipeSegment>>) -> HashMap<Position, Pipe
     for &(dir_x, dir_y) in &[(0, -1), (0, 1), (1, 0), (-1, 0)] {
         let x = start_x + dir_x;
         let y = start_y + dir_y;
-        if x < 0 || y < 0 || x >= input[0].len() as i32 || y >= input.len() as i32 {
+        if x < 0 || y < 0 || x >= input[0].len() as i64 || y >= input.len() as i64 {
             continue;
         }
         let segment = input[y as usize][x as usize];

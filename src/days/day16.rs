@@ -91,7 +91,7 @@ fn count_energized_tiles(start_pos: Position, start_dir: Direction, input: &[Vec
         // follow bean until reaching existing beam or leaving the grid
         loop {
             // stop if out of grid
-            if pos.x >= input[0].len() as i32 || pos.y >= input.len() as i32 {
+            if pos.x >= input[0].len() as i64 || pos.y >= input.len() as i64 {
                 break;
             }
             // stop if beam already energized

@@ -1,7 +1,4 @@
-use std::{
-    cmp::{max, min},
-    collections::HashSet,
-};
+use std::collections::HashSet;
 
 use nom::{
     bytes::complete::tag,
@@ -24,93 +21,42 @@ impl<'a> DaySolver<'a> for Solver {
         parsed
     }
 
-    fn solve1(&self, plan: &Self::Input, test: bool) -> String {
-        let mut position = Position::new(0, 0);
-        let mut visited = HashSet::new();
-        visited.insert(position);
-        let mut min_x = 0;
-        let mut min_y = 0;
-        let mut max_x = 0;
-        let mut max_y = 0;
-        for step in plan {
-            for _ in 0..step.distance_1 {
-                position += step.direction_1;
-                visited.insert(position);
-            }
-            min_x = min(min_x, position.x);
-            min_y = min(min_y, position.y);
-            max_x = max(max_x, position.x);
-            max_y = max(max_y, position.y);
-        }
-        print_grid(test, min_y, max_y, min_x, max_x, &visited);
-        visited = fill(visited, min_x, max_x, min_y, max_y);
-        test_print!(test, "Filled:");
-        print_grid(test, min_y, max_y, min_x, max_x, &visited);
-        visited.len().to_string()
+    fn solve1(&self, plan: &Self::Input, _test: bool) -> String {
+        let steps = plan
+            .iter()
+            .map(|step| (step.direction_1, step.distance_1 as i64))
+            .collect();
+        let area = calculate_area(steps);
+        area.to_string()
     }
 
-    fn solve2(&self, input: &Self::Input, test: bool) -> String {
-        todo!()
+    fn solve2(&self, plan: &Self::Input, _test: bool) -> String {
+        let steps = plan
+            .iter()
+            .map(|step| (step.direction_2, step.distance_2 as i64))
+            .collect();
+        let area = calculate_area(steps);
+        area.to_string()
     }
 }
 
-fn print_grid(
-    test: bool,
-    min_y: i32,
-    max_y: i32,
-    min_x: i32,
-    max_x: i32,
-    visited: &HashSet<Position>,
-) {
-    if test {
-        for y in min_y..=max_y {
-            for x in min_x..=max_x {
-                if visited.contains(&Position::new(x, y)) {
-                    print!("#")
-                } else {
-                    print!(".")
-                }
-            }
-            println!()
-        }
+fn calculate_area(steps: Vec<(Direction, i64)>) -> i64 {
+    let mut position = Position::new(0, 0);
+    let mut vertices = vec![];
+    vertices.push(position);
+    let mut border = 0;
+    for (dir, dist) in steps {
+        position += dir * dist;
+        border += dist;
+        vertices.push(position);
     }
-}
-
-/// Fill space inside border
-fn fill(
-    mut visited: HashSet<Position>,
-    min_x: i32,
-    max_x: i32,
-    min_y: i32,
-    max_y: i32,
-) -> HashSet<Position> {
-    // find some starting point inside border
-    let mut start = None;
-    'y_loop: for y in min_y..=max_y {
-        for x in min_x..=max_x {
-            let pos = Position::new(x, y);
-            if visited.contains(&pos) {
-                continue;
-            } else if visited.contains(&(pos + Direction::new(-1, 0)))
-                && visited.contains(&(pos + Direction::new(0, -1)))
-            {
-                start = Some(pos);
-                break 'y_loop;
-            }
-        }
+    // compute area
+    let mut area = 0;
+    for a in 0..vertices.len() {
+        let b = (a + 1) % vertices.len();
+        area += vertices[a].x * vertices[b].y - vertices[a].y * vertices[b].x
     }
-    let start = start.expect("start has to be found");
-    // fill from starting point
-    let mut queue = vec![start];
-    while let Some(current) = queue.pop() {
-        for pos in current.neighbors() {
-            if !visited.contains(&pos) {
-                queue.push(pos);
-                visited.insert(pos);
-            }
-        }
-    }
-    visited
+    (area + border) / 2 + 1
 }
 
 fn nom_parse(input: &str) -> IResult<&str, Vec<Step>> {
@@ -118,33 +64,49 @@ fn nom_parse(input: &str) -> IResult<&str, Vec<Step>> {
 }
 
 fn step(input: &str) -> IResult<&str, Step> {
-    let (remaining, (dir, _, distance, _, color)) = tuple((
+    let (remaining, (dir, _, distance_1, _, hex_code)) = tuple((
         one_of("URDL"),
         space1,
         complete::u8,
         space1,
         delimited(tag("(#"), alphanumeric1, complete::char(')')),
     ))(input)?;
-    let direction = match dir {
+    let direction_1 = match dir {
         'U' => Direction::new(0, -1),
         'R' => Direction::new(1, 0),
         'D' => Direction::new(0, 1),
         'L' => Direction::new(-1, 0),
         _ => unreachable!(),
     };
+    let (direction_2, distance_2) = parse_hex_code(hex_code);
     Ok((
         remaining,
         Step {
-            direction_1: direction,
-            distance_1: distance,
-            color: color.into(),
+            direction_1,
+            distance_1,
+            direction_2,
+            distance_2,
         },
     ))
+}
+
+fn parse_hex_code(hex_code: &str) -> (Direction, u32) {
+    let (dist, dir) = hex_code.split_at(5);
+    let direction = match dir {
+        "0" => Direction::new(1, 0),
+        "1" => Direction::new(0, 1),
+        "2" => Direction::new(-1, 0),
+        "3" => Direction::new(0, -1),
+        _ => unreachable!(),
+    };
+    let distance = u32::from_str_radix(dist, 16).unwrap();
+    (direction, distance)
 }
 
 #[derive(Debug)]
 pub struct Step {
     direction_1: Direction,
     distance_1: u8,
-    color: String,
+    direction_2: Direction,
+    distance_2: u32,
 }

@@ -58,19 +58,30 @@ pub(crate) use test_print;
 
 #[derive(Debug, PartialEq, Copy, Clone)]
 pub struct Direction {
-    pub x: i32,
-    pub y: i32,
+    pub x: i64,
+    pub y: i64,
 }
 
 impl Direction {
-    pub fn new(x: i32, y: i32) -> Self {
+    pub fn new(x: i64, y: i64) -> Self {
         Self { x, y }
     }
 }
 
-impl PartialEq<(i32, i32)> for Direction {
-    fn eq(&self, other: &(i32, i32)) -> bool {
+impl PartialEq<(i64, i64)> for Direction {
+    fn eq(&self, other: &(i64, i64)) -> bool {
         self.x == other.0 && self.y == other.1
+    }
+}
+
+impl<T: Into<i64> + Copy> std::ops::Mul<T> for Direction {
+    type Output = Self;
+
+    fn mul(self, rhs: T) -> Self::Output {
+        Self {
+            x: self.x * rhs.into(),
+            y: self.y * rhs.into(),
+        }
     }
 }
 
@@ -89,12 +100,12 @@ impl Display for Direction {
 
 #[derive(Debug, PartialEq, Copy, Clone, Eq, Hash)]
 pub struct Position {
-    pub x: i32,
-    pub y: i32,
+    pub x: i64,
+    pub y: i64,
 }
 
 impl Position {
-    pub fn new<T: Into<i32>>(x: T, y: T) -> Self {
+    pub fn new<T: Into<i64>>(x: T, y: T) -> Self {
         Self {
             x: x.into(),
             y: y.into(),
