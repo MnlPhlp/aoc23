@@ -24,7 +24,7 @@ impl<'a> DaySolver<'a> for Solver {
     fn solve1(&self, plan: &Self::Input, _test: bool) -> String {
         let steps = plan
             .iter()
-            .map(|step| (step.direction_1, step.distance_1 as i64))
+            .map(|step| (step.direction_1, step.distance_1 as u32))
             .collect();
         let area = calculate_area(steps);
         area.to_string()
@@ -33,14 +33,16 @@ impl<'a> DaySolver<'a> for Solver {
     fn solve2(&self, plan: &Self::Input, _test: bool) -> String {
         let steps = plan
             .iter()
-            .map(|step| (step.direction_2, step.distance_2 as i64))
+            .map(|step| (step.direction_2, step.distance_2))
             .collect();
         let area = calculate_area(steps);
         area.to_string()
     }
 }
 
-fn calculate_area(steps: Vec<(Direction, i64)>) -> i64 {
+// calculate area of given hole
+// fixed some errors by looking at https://github.com/Tom-the-Bomb/aoc-2023/blob/main/aoc-py/solutions/day18.py
+fn calculate_area(steps: Vec<(Direction, u32)>) -> i64 {
     let mut position = Position::new(0, 0);
     let mut vertices = vec![];
     vertices.push(position);
@@ -50,13 +52,15 @@ fn calculate_area(steps: Vec<(Direction, i64)>) -> i64 {
         border += dist;
         vertices.push(position);
     }
-    // compute area
+    // compute area using shoelace formula for inner polygon area
     let mut area = 0;
     for a in 0..vertices.len() {
         let b = (a + 1) % vertices.len();
         area += vertices[a].x * vertices[b].y - vertices[a].y * vertices[b].x
     }
-    (area + border) / 2 + 1
+    area /= 2;
+    // adding on the border
+    area + border as i64 / 2 + 1
 }
 
 fn nom_parse(input: &str) -> IResult<&str, Vec<Step>> {

@@ -18,8 +18,9 @@ mod day15;
 mod day16;
 mod day17;
 mod day18;
+mod day19;
 
-pub const DAY_COUNT: usize = 18;
+pub const DAY_COUNT: usize = 19;
 
 pub(crate) fn solve(
     day: usize,
@@ -47,6 +48,7 @@ pub(crate) fn solve(
         16 => day16::Solver.solve(day, input, test, task, print_times),
         17 => day17::Solver.solve(day, input, test, task, print_times),
         18 => day18::Solver.solve(day, input, test, task, print_times),
+        19 => day19::Solver.solve(day, input, test, task, print_times),
         _ => panic!("invalid day"),
     }
 }
